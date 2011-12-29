@@ -40,7 +40,10 @@ Build-type:          Simple
 -- Extra-source-files:  
 
 -- Constraint on the version of Cabal needed to build this package.
-Cabal-version:       >=1.2
+Cabal-version:       >=1.8
+Homepage:            http://github.com/boothead/zeromq-conduit
+extra-source-files:  test/main.hs
+
 
 
 Library
@@ -48,11 +51,30 @@ Library
   Exposed-modules:   Data.Conduit.ZMQ  
   
   -- Packages needed in order to build this package.
-  Build-depends:     base, zeromq-haskell >= 0.8.2, conduit       
+  Build-depends:     base, bytestring, cereal, transformers, zeromq-haskell >= 0.8.2, conduit       
   
   -- Modules not exported by this package.
   -- Other-modules:       
   
   -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
   -- Build-tools:         
-  
+ 
+test-suite test
+    hs-source-dirs: test
+    main-is: main.hs
+    type: exitcode-stdio-1.0
+    cpp-options:   -DTEST
+    build-depends:   zeromq-conduit
+                   , conduit
+                   , base
+                   , hspec
+                   , HUnit
+                   , QuickCheck
+                   , bytestring
+                   , transformers
+                   , text
+    ghc-options:     -Wall
+
+source-repository head
+  type:     git
+  location: git://github.com/snoyberg/conduit.git
