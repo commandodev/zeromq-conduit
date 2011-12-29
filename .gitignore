@@ -1,0 +1,4 @@
+*.swp
+dist/
+TAGS
+cabal-dev
