@@ -13,21 +13,23 @@ import Data.Conduit
 import Prelude hiding (init)
 import System.ZMQ
 
+-- | 'SocketEnd' defines whether we are going to @bind@ or @connect@ the @Socket@
 data SocketEnd = Bind String | Connect String
      deriving Show
 
+-- | 'SocketOpts' defines the 'SocketEnd' and the type of 'Socket'
 data SocketOpts st where
+     -- 'SockOpt' is the constructor for all 'Socket's except 'Sub'
      SockOpts :: (SType st) => SocketEnd -> st -> SocketOpts st
+     -- 'SubOpts' is the contructor to use if you want a 'Sub' 'Socket'
      SubOpts :: (SubsType st) => SocketEnd -> st -> String -> SocketOpts st
-
-type SocketMaker = (SType st) => Context -> SocketOpts st -> IO (Socket st)
 
 
 attach :: Socket a -> SocketEnd -> IO ()
 attach sock (Bind s) = bind sock s
 attach sock (Connect s) = connect sock s
 
-mkSocket :: SocketMaker
+mkSocket :: (SType st) => Context -> SocketOpts st -> IO (Socket st)
 mkSocket ctx so =
   case so of
         (SockOpts e st) -> do 
@@ -40,7 +42,7 @@ mkSocket ctx so =
                subscribe sock sub
                return sock
 
-
+-- | A 'Source' for a 'Socket'
 zmqSource :: (ResourceIO m, SType st) => Context
                          -> SocketOpts st
                          -> Source m BS.ByteString
