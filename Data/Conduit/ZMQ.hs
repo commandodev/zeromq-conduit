@@ -2,7 +2,7 @@
 module Data.Conduit.ZMQ
        (
          SocketEnd(..)
-       , SocketOpts(..)
+       , SocketOpts(SockOpts, SubOpts)
        , zmqSource
        , zmqSink
        ) where

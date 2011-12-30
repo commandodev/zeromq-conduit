@@ -1,10 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE CPP #-}
+module Tests where
 import Test.Hspec.Monadic
 import Test.Hspec.HUnit ()
 import Test.Hspec.QuickCheck (prop)
 import Test.HUnit
 
+import Data.Conduit
 import qualified Data.Conduit as C
 import qualified Data.Conduit.List as CL
 import qualified Data.Conduit.Lazy as CLazy
@@ -27,27 +29,28 @@ import Control.Concurrent (threadDelay, killThread)
 import Control.Monad.IO.Class (liftIO)
 import Control.Applicative (pure, (<$>), (<*>))
 
-import System.ZMQ (init)
+import System.ZMQ
 import Data.Conduit.ZMQ
 
-src :: IO (Source IO BS.ByteString)
-src = do
-  ctx <- init 1
-  return $ zmqSource ctx (SocketOpts { end = Bind "tcp://127.0.0.1:9999", sType = Pull})
-  
-snk :: IO (Sink BS.ByteString IO ())
-snk = do
-  ctx <- init 1
-  return $ zmqSink ctx (SocketOpts { end = Connect "tcp://127.0.0.1:9999", sType = Push})
+src :: Context -> Source IO S.ByteString
+src ctx = zmqSource ctx (SockOpts (Bind "tcp://127.0.0.1:9999") Pull)
+
+snk :: Context -> Sink S.ByteString IO ()
+snk ctx = zmqSink ctx (SockOpts (Connect "tcp://127.0.0.1:9999") Push)
 
 printSink :: (Show a, ResourceIO m) => Sink a m ()
 printSink = CL.mapM_ (liftIO . print)
 
-bsSource :: Source IO BS.ByteString
-bsSource =  sourceList $ encode . toInteger <$> [1..10]
+bsSource :: Source IO S.ByteString
+bsSource =  CL.sourceList $ encode . toInteger <$> [1..10]
 
 main :: IO ()
 main = hspecX $ do
+    ctx <- init 1
+    
+  
+
+
     describe "data loss rules" $ do
         {- FIXME
         it "sink yield" $ do
