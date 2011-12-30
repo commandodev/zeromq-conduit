@@ -7,13 +7,9 @@ module Data.Conduit.ZMQ
        , zmqSink
        ) where
 
-import Control.Applicative
 import Control.Monad.IO.Class (liftIO)
-import Data.Serialize (encode)
-import Data.ByteString (pack)
 import qualified Data.ByteString.Internal as BS
 import Data.Conduit
-import Data.Conduit.List as CL
 import Prelude hiding (init)
 import System.ZMQ
 
